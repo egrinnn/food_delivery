@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block title %}Доставка и самовывоз | FoodDelivery{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero -->
+    <div class="text-center py-5 mb-5">
+        <h1 class="display-5 fw-bold mb-3">🚚 Доставка и самовывоз</h1>
+        <p class="lead text-muted">Готовим с любовью, доставляем быстро. Выбирайте удобный способ получить заказ.</p>
+    </div>
+
+    <!-- Два способа получения -->
+    <div class="row g-4 mb-5">
+        <!-- Доставка -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" 
+                             style="width: 80px; height: 80px; background: rgba(93,122,93,0.1);">
+                            <i class="bi bi-truck display-5 text-primary"></i>
+                        </div>
+                        <h3 class="fw-bold">Доставка курьером</h3>
+                    </div>
+                    
+                    <ul class="list-unstyled mb-4">
+                        <li class="d-flex align-items-start mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                            <span><strong>Бесплатно</strong> при заказе от <strong>1000 ₽</strong></span>
+                        </li>
+                        <li class="d-flex align-items-start mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                            <span>300 ₽ при заказе менее 1000 ₽</span>
+                        </li>
+                        <li class="d-flex align-items-start mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                            <span>Время доставки: <strong>30–45 минут</strong></span>
+                        </li>
+                        <li class="d-flex align-items-start">
+                            <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                            <span>Зона доставки: в пределах МКАД</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="p-3 rounded" style="background: rgba(93,122,93,0.08); border-left: 3px solid var(--color-primary);">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Курьер позвонит за 10 минут до прибытия. Оплата картой онлайн или наличными.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Самовывоз -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" 
+                             style="width: 80px; height: 80px; background: rgba(184,149,106,0.15);">
+                            <i class="bi bi-shop display-5" style="color: var(--color-accent);"></i>
+                        </div>
+                        <h3 class="fw-bold">Самовывоз</h3>
+                    </div>
+                    
+                    <ul class="list-unstyled mb-4">
+                        <li class="d-flex align-items-start mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                            <span><strong>Бесплатно</strong> при любом заказе</span>
+                        </li>
+                        <li class="d-flex align-items-start mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                            <span>Готовность через <strong>15–20 минут</strong></span>
+                        </li>
+                        <li class="d-flex align-items-start mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                            <span>Скидка <strong>5%</strong> на все самовывозы</span>
+                        </li>
+                        <li class="d-flex align-items-start">
+                            <i class="bi bi-geo-alt-fill me-2 mt-1" style="color: var(--color-accent);"></i>
+                            <span><strong>Москва, ул. Тверская, д. 1</strong><br>
+                                  <small class="text-muted">Ежедневно с 10:00 до 23:00</small></span>
+                        </li>
+                    </ul>
+                    
+                    <div class="p-3 rounded" style="background: rgba(184,149,106,0.1); border-left: 3px solid var(--color-accent);">
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i>
+                            Заберите заказ в удобное время. Мы сохраним его горячим до 30 минут.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Как заказать -->
+    <div class="card mb-5">
+        <div class="card-body p-4">
+            <h3 class="fw-bold mb-4 text-center">📝 Как сделать заказ</h3>
+            <div class="row g-4 text-center">
+                <div class="col-md-3">
+                    <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2 fw-bold fs-4"
+                         style="width: 50px; height: 50px; background: var(--color-primary); color: #fff;">1</div>
+                    <h6 class="fw-bold">Выберите блюда</h6>
+                    <small class="text-muted">Из нашего меню</small>
+                </div>
+                <div class="col-md-3">
+                    <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2 fw-bold fs-4"
+                         style="width: 50px; height: 50px; background: var(--color-primary); color: #fff;">2</div>
+                    <h6 class="fw-bold">Оформите заказ</h6>
+                    <small class="text-muted">Доставка или самовывоз</small>
+                </div>
+                <div class="col-md-3">
+                    <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2 fw-bold fs-4"
+                         style="width: 50px; height: 50px; background: var(--color-primary); color: #fff;">3</div>
+                    <h6 class="fw-bold">Оплатите</h6>
+                    <small class="text-muted">Онлайн или при получении</small>
+                </div>
+                <div class="col-md-3">
+                    <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2 fw-bold fs-4"
+                         style="width: 50px; height: 50px; background: var(--color-primary); color: #fff;">4</div>
+                    <h6 class="fw-bold">Наслаждайтесь</h6>
+                    <small class="text-muted">Приятного аппетита!</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center">
+        <a href="{% url 'catalog' %}" class="btn btn-primary btn-lg px-5">
+            <i class="bi bi-grid me-2"></i>Перейти в меню
+        </a>
+    </div>
+</div>
+{% endblock %}

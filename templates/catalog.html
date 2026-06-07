@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Меню | FoodDelivery{% endblock %}
+
+{% block content %}
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-6">
+                <input type="text" name="search" class="form-control" 
+                       placeholder="🔍 Поиск блюд..." 
+                       value="{{ request.GET.search }}">
+            </div>
+            <div class="col-md-4">
+                <select name="category" class="form-select">
+                    <option value="">Все категории</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.slug }}" 
+                            {% if request.GET.category == cat.slug %}selected{% endif %}>
+                        {{ cat.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-1"></i>Найти
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Products Grid -->
+<div class="row g-4">
+    {% for p in products %}
+    <div class="col-md-6 col-lg-4 col-xl-3">
+        <div class="card h-100 position-relative">
+            <!-- Favorite Button -->
+            {% if user.is_authenticated %}
+            <button class="fav-btn {% if p.id in favorites %}active{% endif %}" 
+                    data-id="{{ p.id }}" title="Добавить в избранное">
+                <i class="bi bi-heart{% if p.id in favorites %}-fill{% endif %}"></i>
+            </button>
+            {% endif %}
+            
+            <!-- Image -->
+            <img src="{{ p.image_url|default:'https://via.placeholder.com/400x300/5d7a5d/ffffff?text='|add:p.name }}" 
+                 class="card-img-top" alt="{{ p.name }}">
+            
+            <!-- Body -->
+            <div class="card-body d-flex flex-column">
+                <small class="text-muted mb-1">
+                    <i class="bi bi-tag me-1"></i>{{ p.category.name }}
+                </small>
+                <h5 class="card-title">{{ p.name }}</h5>
+                <p class="card-text flex-grow-1">{{ p.description|truncatewords:15 }}</p>
+                
+                <div class="d-flex align-items-center justify-content-between mt-3">
+                    <span class="h5 mb-0 text-primary fw-bold">
+                        {{ p.price }} ₽
+                    </span>
+                    <button class="btn btn-primary add-to-cart" 
+                            data-id="{{ p.id }}"
+                            data-name="{{ p.name }}"
+                            data-price="{{ p.price }}">
+                        <i class="bi bi-cart-plus me-1"></i>В корзину
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle me-2"></i>
+            Блюда не найдены. Попробуйте изменить параметры поиска.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

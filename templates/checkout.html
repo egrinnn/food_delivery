@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+{% block title %}Оформление заказа | FoodDelivery{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4"><i class="bi bi-check-circle me-2"></i>Оформление заказа</h2>
+    
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4"><i class="bi bi-truck me-2"></i>Способ получения</h5>
+                    
+                    <form id="checkout-form" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!--  Переключатель: Доставка / Самовывоз -->
+                        <div class="mb-4">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="w-100 cursor-pointer">
+                                        <input type="radio" name="order_type" value="delivery" 
+                                               class="btn-check order-type-radio" id="type-delivery" checked>
+                                        <div class="card h-100 p-3 text-center border order-type-card" id="card-delivery">
+                                            <i class="bi bi-truck display-5 text-primary"></i>
+                                            <div class="fw-bold mt-2">🚚 Доставка</div>
+                                            <small class="text-muted">От 1000 ₽ — бесплатно</small>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="w-100 cursor-pointer">
+                                        <input type="radio" name="order_type" value="pickup" 
+                                               class="btn-check order-type-radio" id="type-pickup">
+                                        <div class="card h-100 p-3 text-center border order-type-card" id="card-pickup">
+                                            <i class="bi bi-shop display-5" style="color: var(--color-accent)"></i>
+                                            <div class="fw-bold mt-2">🏪 Самовывоз</div>
+                                            <small class="text-muted">Тверская, 1 • скидка 5%</small>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Сохранённые способы получения -->
+                        <div class="mb-4" id="saved-methods-block" style="display: none;">
+                            <label class="form-label text-muted small text-uppercase">Выберите из сохранённых</label>
+                            <select id="saved-address" class="form-select">
+                                <option value="">+ Новый способ</option>
+                            </select>
+                        </div>
+
+                        <!-- Контактные данные (всегда показываются) -->
+                        <div class="mb-3">
+                            <label class="form-label">ФИО *</label>
+                            <input type="text" name="full_name" id="full_name" class="form-control" 
+                                   value="{{ user.get_full_name|default:user.username }}" required>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Телефон *</label>
+                                <input type="tel" name="phone" id="phone" class="form-control" 
+                                       placeholder="+7 (___) ___-__-__" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email *</label>
+                                <input type="email" name="email" id="email" class="form-control" 
+                                       value="{{ user.email }}" required>
+                            </div>
+                        </div>
+
+                        <!-- Блок адреса (только для доставки) -->
+                        <div id="delivery-fields">
+                            <div class="mb-3">
+                                <label class="form-label">Адрес доставки *</label>
+                                <textarea name="address" id="address" class="form-control" rows="3" 
+                                          placeholder="Улица, дом, квартира, подъезд, домофон" required></textarea>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Время доставки</label>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="delivery_time" 
+                                           id="time-asap" value="asap" checked>
+                                    <label class="form-check-label" for="time-asap">
+                                        <i class="bi bi-lightning me-1"></i>Как можно скорее (30–45 мин)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="delivery_time" 
+                                           id="time-scheduled" value="scheduled">
+                                    <label class="form-check-label" for="time-scheduled">
+                                        <i class="bi bi-clock me-1"></i>Выбрать время
+                                    </label>
+                                </div>
+                                <div id="scheduled-time-block" class="mt-2 d-none">
+                                    <input type="datetime-local" name="scheduled_time" id="scheduled_time" class="form-control" min="">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Информация о самовывозе (скрыта по умолчанию) -->
+                        <div id="pickup-info" class="mb-4 p-3 rounded d-none" 
+                             style="background: rgba(184,149,106,0.1); border-left: 3px solid var(--color-accent);">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-geo-alt-fill me-2 mt-1" style="color: var(--color-accent);"></i>
+                                <div>
+                                    <strong>Москва, ул. Тверская, д. 1</strong><br>
+                                    <small class="text-muted">Ежедневно 10:00–23:00 • Готовность 15–20 минут</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Сохранение данных -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="save-address" name="save_address">
+                            <label class="form-check-label" for="save-address">
+                                Сохранить данные для следующих заказов
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-accent btn-lg w-100" id="submit-btn">
+                            <i class="bi bi-credit-card me-2"></i>Оформить заказ
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Правая колонка: состав заказа -->
+        <div class="col-lg-5">
+            <div class="card sticky-top" style="top: 100px;">
+                <div class="card-body">
+                    <h5 class="card-title mb-4"><i class="bi bi-list-check me-2"></i>Ваш заказ</h5>
+                    <div id="order-items"><p class="text-muted text-center py-3">Загрузка...</p></div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Товары:</span>
+                        <span id="order-subtotal">0 ₽</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2" id="delivery-row">
+                        <span class="text-muted">Доставка:</span>
+                        <span id="delivery-price">0 ₽</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 d-none" id="discount-row">
+                        <span class="text-muted">Скидка самовывоза 5%:</span>
+                        <span id="discount-price" class="text-success">−0 ₽</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <span class="fs-5 fw-bold">Итого:</span>
+                        <span id="order-total" class="fs-5 fw-bold text-primary">0 ₽</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.cursor-pointer { cursor: pointer; }
+.order-type-card { transition: all 0.2s; }
+.order-type-card:hover { border-color: var(--color-primary); }
+.order-type-radio:checked + .order-type-card {
+    border-color: var(--color-primary) !important;
+    background: rgba(93,122,93,0.08);
+    box-shadow: 0 0 0 2px var(--color-primary);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // === Инициализация времени ===
+    const now = new Date();
+    now.setHours(now.getHours() + 1, 0, 0, 0);
+    document.getElementById('scheduled_time').min = now.toISOString().slice(0, 16);
+    
+    // === Переключение "Как можно скорее" / "Выбрать время" ===
+    document.getElementById('time-scheduled').addEventListener('change', (e) => {
+        document.getElementById('scheduled-time-block').classList.toggle('d-none', !e.target.checked);
+    });
+    document.getElementById('time-asap').addEventListener('change', (e) => {
+        if (e.target.checked) document.getElementById('scheduled-time-block').classList.add('d-none');
+    });
+    
+    // === Загрузка корзины ===
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const orderItemsContainer = document.getElementById('order-items');
+    
+    if (cart.length === 0) {
+        orderItemsContainer.innerHTML = '<p class="text-danger text-center">Корзина пуста</p>';
+        document.getElementById('submit-btn').disabled = true;
+        return;
+    }
+    
+    console.log('Cart data:', cart);
+    
+    // Подсчёт суммы товаров (с защитой от некорректных данных)
+    let subtotal = 0;
+    let itemsHtml = '<ul class="list-group list-group-flush">';
+    cart.forEach(item => {
+        const price = parseFloat(item.price) || 0;
+        const qty = parseInt(item.qty) || 1;
+        const lineSum = price * qty;
+        subtotal += lineSum;
+        
+        console.log(`📦 ${item.name}: ${price} × ${qty} = ${lineSum}`);
+        
+        itemsHtml += `
+            <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0">
+                <div class="d-flex align-items-center gap-2">
+                    <img src="${item.image || 'https://via.placeholder.com/40x40/5d7a5d/ffffff?text=🍽️'}" 
+                         class="rounded" style="width:40px;height:40px;object-fit:cover"
+                         onerror="this.src='https://via.placeholder.com/40x40/5d7a5d/ffffff?text=🍽️'">
+                    <div>
+                        <div class="fw-medium small">${item.name}</div>
+                        <small class="text-muted">${qty} × ${price.toFixed(0)} ₽</small>
+                    </div>
+                </div>
+                <span class="fw-bold text-primary">${lineSum.toFixed(0)} ₽</span>
+            </li>`;
+    });
+    itemsHtml += '</ul>';
+    orderItemsContainer.innerHTML = itemsHtml;
+    
+    console.log('💰 Subtotal:', subtotal);
+    
+    // === Переключение типа заказа (доставка/самовывоз) ===
+    const deliveryFields = document.getElementById('delivery-fields');
+    const pickupInfo = document.getElementById('pickup-info');
+    const deliveryRow = document.getElementById('delivery-row');
+    const discountRow = document.getElementById('discount-row');
+    
+    function updateOrderType() {
+        const isDelivery = document.getElementById('type-delivery').checked;
+        deliveryFields.style.display = isDelivery ? 'block' : 'none';
+        pickupInfo.classList.toggle('d-none', isDelivery);
+        deliveryRow.classList.toggle('d-none', !isDelivery);
+        discountRow.classList.toggle('d-none', isDelivery);
+        
+        document.getElementById('address').required = isDelivery;
+        
+        updateTotals();
+    }
+    
+    document.querySelectorAll('input[name="order_type"]').forEach(r => {
+        r.addEventListener('change', updateOrderType);
+    });
+    
+    // === Пересчёт итогов ===
+    function updateTotals() {
+        const isDelivery = document.getElementById('type-delivery').checked;
+        let deliveryPrice = 0;
+        let discount = 0;
+        
+        if (isDelivery) {
+            deliveryPrice = subtotal >= 1000 ? 0 : 300;
+            console.log(`🚚 Delivery price: ${deliveryPrice} ₽ (subtotal: ${subtotal} ₽)`);
+        } else {
+            // Скидка 5% на самовывоз
+            discount = Math.round(subtotal * 0.05);
+            console.log(`🏪 Discount: ${discount} ₽`);
+        }
+        
+        const total = subtotal + deliveryPrice - discount;
+        
+        console.log(`💵 Total: ${subtotal} + ${deliveryPrice} - ${discount} = ${total}`);
+        
+        document.getElementById('order-subtotal').textContent = `${subtotal.toFixed(0)} ₽`;
+        
+        //  Обновляем стоимость доставки
+        if (isDelivery) {
+            if (deliveryPrice === 0) {
+                document.getElementById('delivery-price').innerHTML = 
+                    '<span class="text-success fw-bold">Бесплатно</span>';
+            } else {
+                document.getElementById('delivery-price').innerHTML = 
+                    `<span class="fw-bold">${deliveryPrice} ₽</span>`;
+            }
+        } else {
+            document.getElementById('delivery-price').innerHTML = '0 ₽';
+        }
+        
+        document.getElementById('discount-price').textContent = `−${discount} ₽`;
+        document.getElementById('order-total').textContent = `${total.toFixed(0)} ₽`;
+    }
+    
+    // Вызываем пересчёт при загрузке
+    updateTotals();
+    
+    // === Отправка формы ===
+    document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submit-btn');
+        const form = e.target;
+        
+        if (!form.checkValidity()) {
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
+        }
+        
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Обработка...';
+        
+        const orderType = document.querySelector('input[name="order_type"]:checked').value;
+        const deliveryTime = document.querySelector('input[name="delivery_time"]:checked')?.value || 'asap';
+        
+        const orderData = {
+            cart: cart,
+            order_type: orderType,
+            full_name: document.getElementById('full_name').value,
+            phone: document.getElementById('phone').value,
+            email: document.getElementById('email').value,
+            address: orderType === 'delivery' ? document.getElementById('address').value : 'Самовывоз: Тверская, 1',
+            delivery_time: deliveryTime,
+            scheduled_time: deliveryTime === 'scheduled' ? document.getElementById('scheduled_time').value : null,
+            save_address: document.getElementById('save-address').checked,
+            subtotal: subtotal
+        };
+        
+        try {
+            const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const res = await fetch('{% url "checkout" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(orderData)
+            });
+            
+            const data = await res.json();
+            
+            if (data.success) {
+                localStorage.removeItem('cart');
+                const cartCount = document.getElementById('cart-count');
+                if (cartCount) cartCount.textContent = '0';
+                window.location.href = `/profile/orders/?order_id=${data.order_id}`;
+            } else {
+                throw new Error(data.error || 'Ошибка сервера');
+            }
+        } catch (err) {
+            console.error('Checkout error:', err);
+            alert('Не удалось оформить заказ: ' + err.message);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-credit-card me-2"></i>Оформить заказ';
+        }
+    });
+});
+</script>
+{% endblock %}
