@@ -88,4 +88,11 @@ SERVER_EMAIL = 'noreply@fooddelivery.local'
 CSRF_TRUSTED_ORIGINS = os.getenv(
     'DJANGO_CSRF_TRUSTED_ORIGINS',
     'http://localhost,http://127.0.0.1,https://localhost,https://127.0.0.1'
+    'https://xn--80ahc.xn--c1aejinfgin.xn--p1ai'
 ).split(',')
+
+ALLOWED_HOSTS = [
+    'xn--80ahc.xn--c1aejinfgin.xn--p1ai',
+    'localhost',
+    '127.0.0.1',
+]
