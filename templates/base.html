@@ -1,21 +1,23 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru" data-bs-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %} FoodDelivery{% endblock %}</title>
-    
+
     <!-- Bootstrap 5 (с fallback на unpkg) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
-          onerror="this.href='https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css'">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        onerror="this.href='https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css'">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
+
     <!-- Custom CSS (строго после Bootstrap) -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    
+
     {% block extra_css %}{% endblock %}
 </head>
+
 <body class="d-flex flex-column min-vh-100">
     <form id="csrf-form" class="d-none">{% csrf_token %}</form>
     <header class="navbar navbar-expand-lg sticky-top">
@@ -31,7 +33,10 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Меню</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'delivery_info' %}">Доставка</a></li>
                     {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'cart' %}">Корзина <span class="badge bg-primary ms-1" id="cart-count">{{ request.session.cart|length|default:0 }}</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'cart' %}">
+                            Корзина <span class="badge bg-primary ms-1" id="cart-count">0</span>
+                        </a>
+                    </li> 
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav align-items-center">
@@ -42,13 +47,23 @@
                     </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle me-1"></i>{{ user.get_full_name|default:user.username }}</a>
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i
+                                class="bi bi-person-circle me-1"></i>{{ user.get_full_name|default:user.username }}</a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>Профиль</a></li>
-                            <li><a class="dropdown-item" href="{% url 'favorites' %}"><i class="bi bi-heart me-2"></i>Избранное</a></li>
-                            <li><a class="dropdown-item" href="{% url 'order_history' %}"><i class="bi bi-clock-history me-2"></i>Заказы</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Выход</button></form></li>
+                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i
+                                        class="bi bi-person me-2"></i>Профиль</a></li>
+                            <li><a class="dropdown-item" href="{% url 'favorites' %}"><i
+                                        class="bi bi-heart me-2"></i>Избранное</a></li>
+                            <li><a class="dropdown-item" href="{% url 'order_history' %}"><i
+                                        class="bi bi-clock-history me-2"></i>Заказы</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit"
+                                        class="dropdown-item text-danger"><i
+                                            class="bi bi-box-arrow-right me-2"></i>Выход</button></form>
+                            </li>
                         </ul>
                     </li>
                     {% else %}
@@ -81,9 +96,10 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
-            onerror="this.src='https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js'"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        onerror="this.src='https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js'"></script>
     <script src="{% static 'js/main.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>
