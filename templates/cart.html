@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container">
     <h2 class="mb-4"><i class="bi bi-basket me-2"></i>Ваша корзина</h2>
-    
+
     <div id="cart-container">
         <p class="text-muted text-center py-4">Загрузка...</p>
     </div>
@@ -12,13 +12,18 @@
 
 <!-- Скрипт корзины -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const container = document.getElementById('cart-container');
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    document.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('cart-container');
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartCount = document.getElementById('cart-count');
+        if (cartCount) {
+            const totalCount = cart.reduce((sum, i) => sum + (parseInt(i.qty) || 0), 0);
+            cartCount.textContent = totalCount;
+        }
 
-    // === ПУСТАЯ КОРЗИНА ===
-    if (cart.length === 0) {
-        container.innerHTML = `
+        // === ПУСТАЯ КОРЗИНА ===
+        if (cart.length === 0) {
+            container.innerHTML = `
             <div class="card text-center py-5">
                 <div class="card-body">
                     <i class="bi bi-basket display-1 text-muted opacity-50 mb-3"></i>
@@ -29,18 +34,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     </a>
                 </div>
             </div>`;
-        return;
-    }
+            return;
+        }
 
-    // === РЕНДЕР КОРЗИНЫ ===
-    let total = 0;
-    let rows = '';
-    
-    cart.forEach((item, index) => {
-        const lineSum = parseFloat(item.price) * item.qty;
-        total += lineSum;
-        
-        rows += `
+        // === РЕНДЕР КОРЗИНЫ ===
+        let subtotal = 0;
+        let rows = '';
+
+        cart.forEach((item, index) => {
+            const lineSum = parseFloat(item.price) * item.qty;
+            subtotal += lineSum;
+
+            rows += `
             <tr>
                 <td class="ps-4">
                     <div class="d-flex align-items-center gap-3">
@@ -57,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="qty-control d-flex align-items-center gap-2">
                         <button class="btn btn-sm btn-outline-secondary qty-btn" 
                                 data-idx="${index}" data-act="dec">−</button>
-                        <span class="fw-medium" style="min-width:24px;text-align:center">${item.qty}</span>
+                        <span class="fw-medium" style="min-width:24px;text-align:center">${parseInt(item.qty) || 1}</span>
                         <button class="btn btn-sm btn-outline-primary qty-btn" 
                                 data-idx="${index}" data-act="inc">+</button>
                     </div>
@@ -70,9 +75,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     </button>
                 </td>
             </tr>`;
-    });
+        });
 
-    container.innerHTML = `
+        const deliveryPrice = subtotal >= 1000 ? 0 : 300;
+        const total = subtotal + deliveryPrice;
+
+        container.innerHTML = `
         <div class="row">
             <!-- Таблица товаров -->
             <div class="col-lg-8">
@@ -104,12 +112,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         <div class="d-flex justify-content-between mb-2">
                             <span class="text-muted">Товары:</span>
-                            <span>${total.toFixed(0)} ₽</span>
+                            <span>${subtotal.toFixed(0)} ₽</span>
                         </div>
                         <div class="d-flex justify-content-between mb-3">
                             <span class="text-muted">Доставка:</span>
-                            <span class="text-success">Бесплатно</span>
+                            ${deliveryPrice === 0
+                ? '<span class="text-success fw-bold">Бесплатно</span>'
+                : `<span class="fw-bold">${deliveryPrice} ₽</span>`}
                         </div>
+                        
+                        ${subtotal < 1000 ? `
+                        <div class="alert alert-info py-2 small mb-3">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Добавьте товаров на <strong>${(1000 - subtotal).toFixed(0)} ₽</strong> для бесплатной доставки
+                        </div>` : ''}
                         
                         <hr>
                         
@@ -131,35 +147,38 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         </div>`;
 
-    // === ОБРАБОТЧИКИ КНОПОК ===
-    document.querySelectorAll('.qty-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const idx = parseInt(e.currentTarget.dataset.idx);
-            const act = e.currentTarget.dataset.act;
-            
-            if (act === 'inc') cart[idx].qty++;
-            else if (act === 'dec' && cart[idx].qty > 1) cart[idx].qty--;
-            else return;
-            
-            saveAndReload();
+        // === ОБРАБОТЧИКИ КНОПОК ===
+        document.querySelectorAll('.qty-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(e.currentTarget.dataset.idx);
+                const act = e.currentTarget.dataset.act;
+
+                if (act === 'inc') cart[idx].qty = (parseInt(cart[idx].qty) || 0) + 1;
+                else if (act === 'dec' && cart[idx].qty > 1) cart[idx].qty--;
+                else return;
+
+                saveAndReload();
+            });
         });
-    });
-    
-    document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const idx = parseInt(e.currentTarget.dataset.idx);
-            cart.splice(idx, 1);
-            saveAndReload();
+
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(e.currentTarget.dataset.idx);
+                cart.splice(idx, 1);
+                saveAndReload();
+            });
         });
+
+        function saveAndReload() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            const count = document.getElementById('cart-count');
+            if (count) {
+                const totalCount = cart.reduce((sum, i) => sum + (parseInt(i.qty) || 0), 0);
+                count.textContent = totalCount;
+            }
+            location.reload();
+        }
     });
-    
-    function saveAndReload() {
-        localStorage.setItem('cart', JSON.stringify(cart));
-        // Обновляем счётчик в шапке
-        const count = document.getElementById('cart-count');
-        if (count) count.textContent = cart.reduce((sum, i) => sum + i.qty, 0);
-        location.reload();
-    }
-});
 </script>
 {% endblock %}
