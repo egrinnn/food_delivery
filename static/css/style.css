@@ -625,3 +625,30 @@ footer { background: var(--bg-card); border-top: 1px solid var(--border-color); 
     border-color: var(--color-accent) !important;
     color: #1a201a !important; /* тёмный текст на светлом золоте */
 }
+
+.navbar {
+    position: relative !important;
+    z-index: 1050 !important;
+}
+
+.dropdown-menu {
+    z-index: 1070 !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+}
+
+.sticky-top {
+    z-index: 1020 !important;
+}
+
+.card {
+    position: relative;
+    z-index: 1 !important;
+}
+
+.fav-btn {
+    z-index: 2 !important;
+}
+
+.navbar.sticky-top {
+    z-index: 1050 !important;
+}
