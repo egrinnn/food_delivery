@@ -67,8 +67,11 @@
                         <p class="card-text text-muted flex-grow-1">{{ p.description|truncatewords:10 }}</p>
                         <div class="d-flex align-items-center justify-content-between mt-3">
                             <span class="h5 mb-0 text-primary fw-bold">{{ p.price }} ₽</span>
-                            <button class="btn btn-primary btn-sm add-to-cart" data-id="{{ p.id }}">
-                                <i class="bi bi-cart-plus"></i>
+                            <button class="btn btn-primary btn-sm add-to-cart" 
+                                    data-id="{{ p.id }}"
+                                    data-name="{{ p.name }}"
+                                    data-price="{{ p.price }}">
+                                <i class="bi bi-cart-plus me-1"></i>В корзину
                             </button>
                         </div>
                     </div>
