@@ -12,13 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ================= ТЕМА =================
+    // ТЕМА 
     const themeToggle = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
     const html = document.documentElement;
 
     if (themeToggle && themeIcon) {
-        // Загружаем сохранённую тему
         const savedTheme = localStorage.getItem('theme') || 'light';
         html.setAttribute('data-bs-theme', savedTheme);
         updateThemeIcon(savedTheme);
@@ -35,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('theme', newTheme);
             updateThemeIcon(newTheme);
 
-            // Визуальный фидбек
             themeToggle.blur();
         });
     }
@@ -47,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ================= КОРЗИНА: ДОБАВЛЕНИЕ =================
+    //КОРЗИНА
     document.querySelectorAll('.add-to-cart').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             e.preventDefault();
@@ -56,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
 
             if (!csrf) {
-                console.warn('⚠️ CSRF token not found');
+                console.warn(' CSRF token not found');
                 return;
             }
 
@@ -109,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ================= ИЗБРАННОЕ =================
+    // ИЗБРАННОЕ
     document.querySelectorAll('.fav-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             e.preventDefault();
@@ -129,12 +127,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     btn.classList.toggle('active', data.is_favorite);
                 }
             } catch (err) {
-                console.error('❌ Favorites error:', err);
+                console.error('Favorites error:', err);
             }
         });
     });
 
-    // ================= ПОВТОР ЗАКАЗА =================
+    // ПОВТОРИТЬ ЗАКАЗ
     document.querySelectorAll('.repeat-order-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const card = btn.closest('.order-card');
