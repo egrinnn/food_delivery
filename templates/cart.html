@@ -10,7 +10,6 @@
     </div>
 </div>
 
-<!-- Скрипт корзины -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('cart-container');
@@ -21,7 +20,7 @@
             cartCount.textContent = totalCount;
         }
 
-        // === ПУСТАЯ КОРЗИНА ===
+        //  ПУСТАЯ КОРЗИНА 
         if (cart.length === 0) {
             container.innerHTML = `
             <div class="card text-center py-5">
@@ -37,7 +36,7 @@
             return;
         }
 
-        // === РЕНДЕР КОРЗИНЫ ===
+        // РЕНДЕР КОРЗИНЫ 
         let subtotal = 0;
         let rows = '';
 
@@ -147,7 +146,7 @@
             </div>
         </div>`;
 
-        // === ОБРАБОТЧИКИ КНОПОК ===
+        // ОБРАБОТЧИКИ КНОПОК 
         document.querySelectorAll('.qty-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const idx = parseInt(e.currentTarget.dataset.idx);
